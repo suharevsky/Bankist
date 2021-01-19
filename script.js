@@ -121,10 +121,8 @@ createUsernames(accounts);
 const updateUI = function (acc) {
   // Display movements
   displayMovements(acc.movements);
-
   // Display balance
   calcDisplayBalance(acc);
-
   // Display summary
   calcDisplaySummary(acc);
 };
@@ -178,4 +176,29 @@ btnTransfer.addEventListener("click", function (e) {
   }
 
   inputTransferTo.value = inputTransferAmount.value = "";
+});
+
+btnClose.addEventListener("click", function (e) {
+  e.preventDefault();
+  console.log(
+    typeof inputCloseUsername.value,
+    typeof currentAccount.username,
+    typeof inputClosePin.value,
+    typeof currentAccount.pin
+  );
+  if (
+    inputCloseUsername.value === currentAccount.username &&
+    Number(inputClosePin.value) === currentAccount.pin
+  ) {
+    // .indexOf(23)
+    const index = accounts.findIndex(
+      (acc, i) => acc.username === currentAccount.username
+    );
+
+    accounts.splice(index, 1);
+
+    containerApp.style.opacity = 0;
+    labelWelcome.textContent = `Log in to get started`;
+    inputCloseUsername.value = inputClosePin.value = "";
+  }
 });
