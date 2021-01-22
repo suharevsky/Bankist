@@ -73,7 +73,7 @@ const inputLoanAmount = document.querySelector(".form__input--loan-amount");
 const inputCloseUsername = document.querySelector(".form__input--user");
 const inputClosePin = document.querySelector(".form__input--pin");
 
-const formatMovementDate = (date) => {
+const formatMovementDate = (date, locale) => {
   const calcDaysPassed = (date1, date2) =>
     Math.round(Math.abs(date1 - date2) / (1000 * 60 * 60 * 24));
 
@@ -86,7 +86,7 @@ const formatMovementDate = (date) => {
   const day = date.getDate();
   const month = date.getMonth() + 1;
   const year = date.getFullYear();
-  return `${day}/${month}/${year}`;
+  return new Intl.DateTimeFormat(locale).format(date);
 };
 
 const displayMovements = function (acc, sort = false) {
@@ -101,7 +101,7 @@ const displayMovements = function (acc, sort = false) {
     const type = mov > 0 ? "deposit" : "withdrawal";
 
     const date = new Date(acc.movementsDates[i]);
-    const displayDate = formatMovementDate(date);
+    const displayDate = formatMovementDate(date, acc.locale);
 
     const html = `<div class="movements__row">
     <div class="movements__type movements__type--${type}">
@@ -174,13 +174,6 @@ currentAccount = account1;
 updateUI(currentAccount);
 containerApp.style.opacity = 100;
 
-const date = new Date();
-const day = `${date.getDate()}`;
-const month = `${date.getMonth()}` + 1;
-const year = `${date.getFullYear()}`.padStart(2, 0);
-
-labelDate.textContent = `${day}/${month}/${year}`;
-
 btnLogin.addEventListener("click", function (e) {
   e.preventDefault();
 
@@ -195,6 +188,29 @@ btnLogin.addEventListener("click", function (e) {
     }`;
 
     containerApp.style.opacity = 100;
+
+    // Create current date and time
+    // const date = new Date();
+    // const day = `${date.getDate()}`;
+    // const month = `${date.getMonth()}` + 1;
+    // const year = `${date.getFullYear()}`.padStart(2, 0);
+    // labelDate.textContent = `${day}/${month}/${year}`;
+
+    const now = new Date();
+    const options = {
+      hour: "numeric",
+      minute: "numeric",
+      day: "numeric",
+      month: "numeric",
+      year: "numeric",
+    };
+
+    //labelDate.textContent = new Intl.DateTimeFormat("he-IL", options).format(now);
+    //const locale = navigator.language;
+    labelDate.textContent = new Intl.DateTimeFormat(
+      currentAccount.locale,
+      options
+    ).format(now);
 
     // Clear input fields
     inputLoginPin.value = inputLoginUsername.value = "";
