@@ -173,13 +173,38 @@ const updateUI = function (acc) {
   calcDisplaySummary(acc);
 };
 
-// Event handler
-let currentAccount;
+const startLogOutTimer = function () {
+  // Set time to 5 min.
+  let time = 30;
 
-// Fake Always Logged In
-currentAccount = account1;
-updateUI(currentAccount);
-containerApp.style.opacity = 100;
+  const tick = function () {
+    const min = String(Math.trunc(time / 60)).padStart(2, 0);
+    const sec = String(time % 60).padStart(2, 0);
+
+    // In each call, print ramaining time to UI
+    labelTimer.textContent = `${min} : ${sec}`;
+
+    // When 0 sec., stop timer and logout user
+    if (time === 0) {
+      clearInterval(timer);
+      labelWelcome.textContent = "Login to get started";
+      containerApp.style.opacity = 0;
+    }
+
+    // Decrease 1s
+    time--;
+  };
+
+  tick();
+
+  // Call timer every second
+  const timer = setInterval(tick, 1000);
+
+  return timer;
+};
+
+// Event handler
+let currentAccount, timer;
 
 btnLogin.addEventListener("click", function (e) {
   e.preventDefault();
@@ -224,7 +249,11 @@ btnLogin.addEventListener("click", function (e) {
     inputLoginPin.blur();
     inputLoginUsername.blur();
   }
+
   updateUI(currentAccount);
+
+  if (timer) clearInterval(timer);
+  timer = startLogOutTimer();
 });
 
 let sorted = false;
@@ -260,6 +289,10 @@ btnTransfer.addEventListener("click", function (e) {
     console.log(new Date().toISOString());
 
     updateUI(currentAccount);
+
+    // Reset timer
+    clearInterval(timer);
+    timer = startLogOutTimer();
   }
 
   inputTransferTo.value = inputTransferAmount.value = "";
@@ -278,6 +311,10 @@ btnLoan.addEventListener("click", function (e) {
     currentAccount.movementsDates.push(new Date().toISOString());
 
     updateUI(currentAccount);
+
+    // Reset timer
+    clearInterval(timer);
+    timer = startLogOutTimer();
   }
   inputLoanAmount.value = "";
 });
